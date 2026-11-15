@@ -1,0 +1,4 @@
+classe_altitude
+zone_climatique
+coordonnee_cartographique_x_ban
+coordonnee_cartographique_y_ban
