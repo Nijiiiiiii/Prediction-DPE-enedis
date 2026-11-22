@@ -43,13 +43,23 @@ def afficher_graphique(fig, nom_fichier, cle):
     """Affiche une figure et ajoute un bouton de téléchargement PNG."""
     st.pyplot(fig)
 
-    buffer = io.BytesIO()
-    fig.savefig(buffer, format="png", dpi=300, bbox_inches="tight")
-    st.download_button(
-        "Télécharger (PNG)",
-        data=buffer.getvalue(),
-        file_name=f"{nom_fichier}.png",
-        mime="image/png",
-        key=cle,
-    )
-    plt.close(fig)
+def afficher(fonction, data, cle, nom_fichier = None):
+    """Affiche selon le type d'objet retourné."""
+    obj = fonction(data)
+    if obj is None:
+        st.info("Aucune donnée à afficher.")
+    elif isinstance(obj, plt.Figure):
+        st.pyplot(obj)
+        buffer = io.BytesIO()
+        obj.savefig(buffer, format="png", dpi=300, bbox_inches="tight")
+        st.download_button(
+            "Télécharger (PNG)",
+            data=buffer.getvalue(),
+            file_name=f"{nom_fichier}.png",
+            mime="image/png",
+            key=cle,
+        )
+        plt.close(obj)
+    else:
+        import streamlit.components.v1 as components
+        components.html(obj.get_root().render(), height=450)

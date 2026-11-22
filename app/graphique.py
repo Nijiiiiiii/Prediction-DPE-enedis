@@ -12,11 +12,16 @@ COULEURS_DPE = {
     'E': '#F3A23A', 'F': '#E76B32', 'G': '#D93636'
 }
 
-def histogramme(data):
-    # Comptage des différentes classes DPE
-    ordre_dpe = ['A', 'B', 'C', 'D', 'E', 'F', 'G']
+ordre_dpe = ['A', 'B', 'C', 'D', 'E', 'F', 'G']
 
-    dpe_counts = (data['etiquette_dpe'].value_counts().reindex(ordre_dpe, fill_value=0))
+def hist_dpe(data):
+    return histogramme(data,"dpe")
+
+def hist_ges(data):
+    return histogramme(data,"ges")
+
+def histogramme(data, etiquette):
+    dpe_counts = (data[f'etiquette_{etiquette.lower()}'].value_counts().reindex(ordre_dpe, fill_value=0))
 
     # Calcul des pourcentages
     dpe_percentages = dpe_counts / dpe_counts.sum() * 100
@@ -40,9 +45,9 @@ def histogramme(data):
             ha='center', va='bottom', fontsize=10
         )
 
-    ax.set_title('Distribution des classes énergétiques DPE',
+    ax.set_title(f'Distribution des classes énergétiques {etiquette.upper()}',
                     fontsize=15, fontweight='bold', pad=15)
-    ax.set_xlabel('Classe énergétique DPE', fontsize=12)
+    ax.set_xlabel(f'Classe énergétique {etiquette.upper()}', fontsize=12)
     ax.set_ylabel('Nombre de logements', fontsize=12)
 
     sns.despine(ax=ax)
