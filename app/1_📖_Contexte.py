@@ -6,6 +6,7 @@ from pathlib import Path
 sys.path.append(str(Path(__file__).resolve().parent.parent))
 
 from util import charger_donnees, filtres
+from preparation import Preparation
 
 st.set_page_config(page_title="Contexte", layout="wide")
 df = charger_donnees()
