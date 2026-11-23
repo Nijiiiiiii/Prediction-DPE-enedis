@@ -54,19 +54,13 @@ def align_columns(model, X: pd.DataFrame) -> pd.DataFrame:
 #------
 st.set_page_config(page_title="Prédiction", layout="wide")
 st.title("📈 Prédiction")
-st.write("Renseigne les caractéristiques du logement puis lance la prédiction.")
+st.write("Caractéristiques du logement :")
  
  
 data = charger_metadata()
 columns, meta = data["columns"], data["meta"]
 
 modele_dpe, modele_conso = charger_model()
- 
-n_cat = sum(m["type"] == "categorielle" for m in meta.values())
-st.caption(
-    f"{len(columns)} variables détectées ({n_cat} catégorielles, "
-    f"{len(columns) - n_cat} quantitatives) • {data['n_rows']:,} lignes dans le jeu de données"
-)
  
 with st.form("form_prediction"):
     grid = st.columns(2)
@@ -111,7 +105,6 @@ if submitted:
         st.session_state.pop("resultats", None)
         st.session_state["erreur_modele"] = e
 
-# 3) Affichage (toujours en dernier, après le calcul)
 if "erreur_modele" in st.session_state:
     st.error("Impossible de lancer la prédiction.")
     st.exception(st.session_state["erreur_modele"])
@@ -131,7 +124,3 @@ if "resultats" in st.session_state:
     if res["probas"] is not None:
         st.caption("Probabilité par classe DPE")
         st.bar_chart(res["probas"])
- 
-if "X_input" in st.session_state:
-    with st.expander("Données saisies"):
-        st.dataframe(st.session_state["X_input"], hide_index=True, use_container_width=True)
