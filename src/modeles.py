@@ -112,7 +112,7 @@ modeledpe = Pipeline([
     ('preprocessing', preprocessor),
     ('hgb', HistGradientBoostingClassifier(class_weight = None,
                                            learning_rate = 0.1,
-                                           max_leaf_nodes = 30))
+                                           max_leaf_nodes = 50))
 ])
 
 # ------------------------
