@@ -3,7 +3,6 @@ import pandas as pd
 import sys
 from pathlib import Path
 from streamlit_folium import st_folium
-from graphique import carte_dpe
 
 sys.path.append(str(Path(__file__).resolve().parent.parent.parent))
 
@@ -14,13 +13,41 @@ st.set_page_config(page_title="Graphique", layout="wide")
 df = charger_donnees()
 
 KPI = {
-    "Etiquette DPE": [
-        ("Distribution des classes", hist_dpe),
-        ("Carte des logements", carte_dpe)
+    "Étiquette DPE": [
+        ("Répartition des classes DPE (Camembert)", cam_dpe),
+        ("Répartition des classes DPE (Histogramme)", hist_dpe),
+        ("Consommation / DPE", vio_dpe_conso),
+        ("Carte des logements par DPE", carte_dpe)
     ],
 
-    "Etiquette GES": [
-        ("Distribution des classes", hist_ges)
+    "Étiquette GES": [
+        ("Répartition des classes GES (Camembert)", cam_ges),
+        ("Répartition des classes GES (Histogramme)", hist_ges),
+        ("Consommation / GES", vio_ges_conso)
+    ],
+
+    "Période de construction": [
+        ("Répartition des périodes de construction (Camembert)", cam_periodes),
+        ("Répartition des périodes de construction (Histogramme)", hist_periodes),
+        ("Consommation par période de construction", vio_per_conso),
+        ("DPE par période de construction", bar_dpe_periode),
+        ("GES par période de construction", bar_ges_periode),
+    ],
+
+    "Type de bâtiment": [
+        ("Répartition des types de bâtiments (Camembert)", cam_typelog),
+        ("Répartition des types de bâtiments (Histogramme)", hist_typelog),
+        ("Consommation par type de bâtiment", vio_log_conso),
+        ("DPE par type de bâtiment", bar_dpe_log),
+        ("GES par type de bâtiment", bar_ges_log),
+    ],
+
+    "Type d'énergie principale": [
+        ("Répartition des types d'énergie (Camembert)", cam_energie),
+        ("Répartition des types d'énergie (Histogramme)", hist_energie),
+        ("Consommation par type d'énergie", vio_ener_conso),
+        ("DPE par type d'énergie", bar_dpe_energ),
+        ("GES par type d'énergie", bar_ges_energ)
     ]
 }
 
@@ -56,4 +83,4 @@ else:
     for col, (titre, fonction) in zip(st.columns(n_visibles), visibles):
         with col:
             st.subheader(titre)
-            afficher(fonction, df, titre, titre)
+            afficher(fonction, df_filtre, titre, titre)

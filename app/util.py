@@ -39,10 +39,6 @@ def filtres(df):
 
     return df[masque]
 
-def afficher_graphique(fig, nom_fichier, cle):
-    """Affiche une figure et ajoute un bouton de téléchargement PNG."""
-    st.pyplot(fig)
-
 def afficher(fonction, data, cle, nom_fichier = None):
     """Affiche selon le type d'objet retourné."""
     obj = fonction(data)
@@ -62,4 +58,4 @@ def afficher(fonction, data, cle, nom_fichier = None):
         plt.close(obj)
     else:
         import streamlit.components.v1 as components
-        components.html(obj.get_root().render(), height=450)
+        components.html(obj.get_root().render(), height=350)
