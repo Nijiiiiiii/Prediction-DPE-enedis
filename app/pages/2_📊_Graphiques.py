@@ -55,10 +55,10 @@ st.title("📊 Graphiques")
 
 df_filtre = filtres(df)
 
-kpi = st.pills("Choisis un KPI", list(KPI), default=list(KPI)[0], selection_mode="single")
+kpi = st.pills("KPI", list(KPI), default=list(KPI)[0], selection_mode="single")
 
 if kpi is None:
-    st.info("Sélectionne un KPI.")
+    st.info("Sélectionnez un KPI.")
 else:
     graphiques = KPI[kpi]
     n_visibles = 2
