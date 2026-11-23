@@ -51,7 +51,7 @@ KPI = {
     ]
 }
 
-st.title("Graphiques")
+st.title("📊 Graphiques")
 
 df_filtre = filtres(df)
 

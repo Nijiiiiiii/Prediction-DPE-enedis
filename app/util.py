@@ -3,13 +3,47 @@ import pandas as pd
 from pathlib import Path
 import io
 import matplotlib.pyplot as plt
+from pandas.api.types import is_bool_dtype, is_integer_dtype, is_numeric_dtype
 
 # Chemin robuste, indépendant du dossier de lancement
 DATA_PATH = Path(__file__).resolve().parent.parent / "Data" / "dpe.csv.gz"
+EXPLI_PATH = Path(__file__).resolve().parent.parent / "Data" / "dpe_explicative.csv.gz"
 
 @st.cache_data
 def charger_donnees():
     return pd.read_csv(DATA_PATH, index_col="numero_dpe")
+
+@st.cache_data(show_spinner="Chargement des données…")
+def load_metadata():
+    #Charge le CSV et ne garde que ce qui est utile au formulaire
+    #(type, catégories, min / max / médiane), pour éviter de garder
+    #tout le DataFrame en mémoire.
+    df = pd.read_csv(EXPLI_PATH, index_col="numero_dpe")
+ 
+    meta = {}
+    for col in df.columns:
+        serie = df[col].dropna()
+        if serie.empty:
+            continue
+ 
+        # Quantitatif : numérique et non booléen
+        if is_numeric_dtype(serie) and not is_bool_dtype(serie):
+            meta[col] = {
+                "type": "quantitative",
+                "is_int": bool(is_integer_dtype(serie)),
+                "min": float(serie.min()),
+                "max": float(serie.max()),
+                "median": float(serie.median())
+            }
+        # Sinon : string / objet / booléen -> catégoriel
+        else:
+            meta[col] = {
+                "type": "categorielle",
+                "categories": sorted(serie.astype(str).unique().tolist()),
+            }
+ 
+    return {"columns": list(meta.keys()), "meta": meta, "n_rows": len(df)}
+
 
 def filtres(df):
     colnum = df.select_dtypes(include="number").columns

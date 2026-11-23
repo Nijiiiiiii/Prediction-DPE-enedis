@@ -10,7 +10,7 @@ from util import charger_donnees, filtres
 st.set_page_config(page_title="Contexte", layout="wide")
 df = charger_donnees()
 
-st.title("Contexte")
+st.title("📖 Contexte")
 st.write("Bla bla bla, image dpe, bla bla")
 
 st.header("Données")
