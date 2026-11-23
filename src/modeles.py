@@ -9,7 +9,7 @@ from sklearn.ensemble import HistGradientBoostingRegressor, HistGradientBoosting
 # -----------------------
 # Préparation des données
 # -----------------------
-class Preparation(BaseEstimator, TransformerMixin):
+'''class Preparation(BaseEstimator, TransformerMixin):
     # Fonction permettant des trié dans l'ordre croissant les différentes periodes de construction 
     def get_per(slef, periode_construction):
         # Etant données que dans les periodes il y a une periode "avant" et une "après",
@@ -49,7 +49,7 @@ class Preparation(BaseEstimator, TransformerMixin):
 
     # Pour lié le fit et le transforme
     def fit_transform(self, X, y = None, **fit_params):
-        return super().fit_transform(X, y, **fit_params)
+        return super().fit_transform(X, y, **fit_params)'''
 
 # -----------------------
 # Importation des données
@@ -57,6 +57,10 @@ class Preparation(BaseEstimator, TransformerMixin):
 # On se plasse dans le bon endroit pour accedé plus facilement aux fichiers
 while "Notebooks" not in os.listdir():
     os.chdir("../")
+
+import sys
+sys.path.append(os.path.abspath("app"))   # dossier qui contient preparation.py
+from preparation import Preparation
 
 # On importe nos données
 X = pd.read_csv("Data/dpe_explicative.csv.gz", index_col=0)

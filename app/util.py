@@ -1,20 +1,30 @@
 import streamlit as st
 import pandas as pd
 from pathlib import Path
-import io
+import io, pickle
 import matplotlib.pyplot as plt
 from pandas.api.types import is_bool_dtype, is_integer_dtype, is_numeric_dtype
+from preparation import Preparation
 
 # Chemin robuste, indépendant du dossier de lancement
 DATA_PATH = Path(__file__).resolve().parent.parent / "Data" / "dpe.csv.gz"
 EXPLI_PATH = Path(__file__).resolve().parent.parent / "Data" / "dpe_explicative.csv.gz"
+MODELE_DPE = Path(__file__).resolve().parent.parent / "src" / "modeles" / "Modele_dpe.sav"
+MODELE_CONSO = Path(__file__).resolve().parent.parent / "src" / "modeles" / "Modele_consomation.sav"
 
-@st.cache_data
+class _Unpickler(pickle.Unpickler):
+    """Quand le pickle réclame une classe de __main__, on la prend dans preparation.py"""
+    def find_class(self, module, name):
+        if module == "__main__" and hasattr(Preparation, name):
+            return getattr(Preparation, name)
+        return super().find_class(module, name)
+
+@st.cache_data(show_spinner="Chargement des données...")
 def charger_donnees():
     return pd.read_csv(DATA_PATH, index_col="numero_dpe")
 
-@st.cache_data(show_spinner="Chargement des données…")
-def load_metadata():
+@st.cache_data(show_spinner="Chargement des meta données…")
+def charger_metadata():
     #Charge le CSV et ne garde que ce qui est utile au formulaire
     #(type, catégories, min / max / médiane), pour éviter de garder
     #tout le DataFrame en mémoire.
@@ -25,9 +35,12 @@ def load_metadata():
         serie = df[col].dropna()
         if serie.empty:
             continue
+        # Booléen : à traiter à part (is_numeric_dtype(bool) est True, mais ce n'est pas un nombre)
+        if is_bool_dtype(serie):
+            meta[col] = {"type": "booleenne"}
  
         # Quantitatif : numérique et non booléen
-        if is_numeric_dtype(serie) and not is_bool_dtype(serie):
+        elif is_numeric_dtype(serie) and not is_bool_dtype(serie):
             meta[col] = {
                 "type": "quantitative",
                 "is_int": bool(is_integer_dtype(serie)),
@@ -44,7 +57,15 @@ def load_metadata():
  
     return {"columns": list(meta.keys()), "meta": meta, "n_rows": len(df)}
 
+@st.cache_resource(show_spinner="Chargement des modèles…")
+def charger_model():
+    with open(MODELE_DPE, "rb") as f:
+        dpe = _Unpickler(f).load()
+    with open(MODELE_CONSO, "rb") as f:
+        conso = _Unpickler(f).load()
+    return dpe, conso
 
+    
 def filtres(df):
     colnum = df.select_dtypes(include="number").columns
     colcat = df.select_dtypes(exclude="number").columns
